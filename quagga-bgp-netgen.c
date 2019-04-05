@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2011 Olivier Cochard-Labbé
+ * Copyright (c) 2011-2019 Olivier Cochard-Labbé
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,8 +61,11 @@ main(int argc, char *argv[])
 	printf("router bgp %s\n",argv[2]);
 	printf(" bgp router-id %s\n",argv[3]);
 	printf(" neighbor %s remote-as %s\n",argv[5],argv[4]);
+	printf(" !\n");
+	printf(" address-family ipv4 unicast\n");
+	printf("  neighbor %s activate\n",argv[5]);
 	i=0;
-	while ( i <= networks ) {
+	while ( i < networks ) {
 		/* Avoid loopback network */
 		if ( a == 127 ) continue;
 		/* Do not generate invalid networks */
@@ -71,19 +74,18 @@ main(int argc, char *argv[])
     		exit(-1);
 		}
 		b = 0;
-		while ( b < 255 ) {
+		while ( b < 255 && i < networks ) {
 			c = 0;
-			while ( c < 255 ) {
-				printf(" network %u.%i.%i.0/24\n",a,b,c);
+			while ( c < 255 && i < networks ) {
+				printf("  network %u.%i.%i.0/24\n",a,b,c);
 				c++;
 				i++;
-				if ( i == networks )
-					return (0);
 			}
 			b++;
 		}
 		a++;
 	}
-
+	printf("  exit-address-family\n");
+	printf(" !\n");
 	return (0);
 }
